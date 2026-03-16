@@ -1,0 +1,1385 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Baby Checklist</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Playfair+Display:wght@600;700&display=swap');
+
+:root {
+  --rose: #E8B4B8;
+  --rose-light: #F5D5D8;
+  --rose-ultra: #FBE9EB;
+  --sage: #B5C5A3;
+  --sage-light: #D4E0C8;
+  --sage-ultra: #EBF0E4;
+  --cream: #FDF8F4;
+  --sand: #F5EDE6;
+  --sand-dark: #E8DDD4;
+  --taupe: #9B8E82;
+  --taupe-dark: #6B6058;
+  --text: #3D3530;
+  --text-light: #7A6E65;
+  --white: #FFFFFF;
+  --lavender: #C5B9CD;
+  --lavender-light: #E8E0ED;
+  --peach: #F0C9A6;
+  --peach-light: #F8E2CD;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: 'DM Sans', -apple-system, sans-serif;
+  background: var(--cream);
+  color: var(--text);
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Header */
+.header {
+  background: linear-gradient(135deg, var(--rose-light) 0%, var(--lavender-light) 50%, var(--sage-light) 100%);
+  padding: 2.5rem 1.5rem 1rem;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+.header::before {
+  content: '';
+  position: absolute;
+  top: -50%; left: -50%;
+  width: 200%; height: 200%;
+  background: radial-gradient(ellipse at 30% 50%, rgba(255,255,255,0.3) 0%, transparent 60%);
+  pointer-events: none;
+}
+.header h1 {
+  font-family: 'Playfair Display', serif;
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--taupe-dark);
+  position: relative;
+  letter-spacing: -0.02em;
+}
+.header p {
+  font-size: 0.9rem;
+  color: var(--taupe);
+  margin-top: 0.3rem;
+  position: relative;
+  font-style: italic;
+}
+
+/* Progress bar */
+.progress-wrap {
+  padding: 0.8rem 1.5rem;
+  background: var(--white);
+  border-bottom: 1px solid var(--sand);
+  position: sticky;
+  top: 0;
+  z-index: 90;
+}
+.progress-bar-bg {
+  height: 6px;
+  background: var(--sand);
+  border-radius: 3px;
+  overflow: hidden;
+}
+.progress-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--rose), var(--sage));
+  border-radius: 3px;
+  transition: width 0.4s ease;
+  width: 0%;
+}
+.progress-text {
+  font-size: 0.75rem;
+  color: var(--taupe);
+  margin-top: 0.3rem;
+  text-align: right;
+}
+
+/* Tabs */
+.tabs {
+  display: flex;
+  background: var(--white);
+  border-bottom: 1px solid var(--sand);
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  position: sticky;
+  top: 52px;
+  z-index: 89;
+}
+.tabs::-webkit-scrollbar { display: none; }
+.tab {
+  flex: 1;
+  min-width: fit-content;
+  padding: 0.85rem 1rem;
+  text-align: center;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--taupe);
+  cursor: pointer;
+  border-bottom: 2.5px solid transparent;
+  transition: all 0.25s ease;
+  white-space: nowrap;
+  user-select: none;
+  background: none;
+  border-top: none; border-left: none; border-right: none;
+}
+.tab:hover { color: var(--taupe-dark); background: var(--sand); }
+.tab.active {
+  color: var(--taupe-dark);
+  border-bottom-color: var(--rose);
+  background: var(--rose-ultra);
+}
+.tab .tab-count {
+  display: inline-block;
+  font-size: 0.65rem;
+  font-weight: 700;
+  background: var(--sand);
+  color: var(--taupe);
+  padding: 0.1rem 0.45rem;
+  border-radius: 10px;
+  margin-left: 0.35rem;
+  vertical-align: middle;
+}
+.tab.active .tab-count {
+  background: var(--rose-light);
+  color: var(--taupe-dark);
+}
+
+/* Page content */
+.page { display: none; padding: 1rem 1rem 6rem; max-width: 720px; margin: 0 auto; }
+.page.active { display: block; }
+
+/* Category sections */
+.category { margin-bottom: 1.5rem; }
+.category-header {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.6rem 0;
+  margin-bottom: 0.5rem;
+  cursor: pointer;
+  user-select: none;
+}
+.category-icon {
+  width: 32px; height: 32px;
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1rem;
+  flex-shrink: 0;
+}
+.category-header h2 {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: var(--taupe-dark);
+  flex: 1;
+}
+.category-count {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--taupe);
+  background: var(--sand);
+  padding: 0.15rem 0.55rem;
+  border-radius: 10px;
+}
+.category-chevron {
+  color: var(--taupe);
+  transition: transform 0.25s ease;
+  font-size: 0.8rem;
+}
+.category.collapsed .category-chevron { transform: rotate(-90deg); }
+.category.collapsed .category-items { display: none; }
+
+/* Items */
+.item {
+  background: var(--white);
+  border-radius: 12px;
+  padding: 0.85rem 1rem;
+  margin-bottom: 0.5rem;
+  display: flex;
+  gap: 0.75rem;
+  align-items: flex-start;
+  border: 1px solid var(--sand);
+  transition: all 0.2s ease;
+  position: relative;
+}
+.item:hover { border-color: var(--sand-dark); }
+.item.checked { opacity: 0.55; background: var(--sand); }
+.item.checked .item-name { text-decoration: line-through; }
+.item.custom-item { border-left: 3px solid var(--lavender); }
+.item.hidden-original { display: none; }
+
+.checkbox {
+  width: 22px; height: 22px;
+  border-radius: 6px;
+  border: 2px solid var(--sand-dark);
+  cursor: pointer;
+  flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.2s ease;
+  margin-top: 1px;
+  background: var(--white);
+}
+.checkbox:hover { border-color: var(--rose); }
+.checkbox.checked { background: var(--sage); border-color: var(--sage); }
+.checkbox.checked::after {
+  content: '';
+  width: 6px; height: 10px;
+  border: solid white;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+  margin-top: -2px;
+}
+
+.item-content { flex: 1; min-width: 0; }
+.item-name {
+  font-weight: 500;
+  font-size: 0.9rem;
+  color: var(--text);
+  line-height: 1.4;
+}
+.item-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-top: 0.35rem;
+}
+.meta-tag {
+  font-size: 0.7rem;
+  padding: 0.15rem 0.5rem;
+  border-radius: 6px;
+  font-weight: 500;
+}
+.meta-merk { background: var(--lavender-light); color: #6B5A7A; cursor: pointer; position: relative; }
+.meta-merk:hover { background: #D5C8DE; }
+.meta-merk::after { content: ' \270E'; font-size: 0.65rem; opacity: 0.5; }
+.merk-edit-wrap {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  margin-top: 0.35rem;
+}
+.merk-edit-input {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.7rem;
+  padding: 0.15rem 0.45rem;
+  border: 1.5px solid var(--lavender);
+  border-radius: 6px;
+  background: var(--white);
+  color: #6B5A7A;
+  outline: none;
+  width: 120px;
+}
+.merk-edit-input:focus { border-color: var(--rose); }
+.merk-edit-ok, .merk-edit-cancel {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.6rem;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  padding: 0.15rem 0.35rem;
+  line-height: 1;
+}
+.merk-edit-ok { background: var(--sage-light); color: #5A6B4A; }
+.merk-edit-ok:hover { background: var(--sage); }
+.merk-edit-cancel { background: var(--sand); color: var(--taupe); }
+.merk-edit-cancel:hover { background: var(--sand-dark); }
+.meta-wanneer { background: var(--peach-light); color: #8B6B4A; }
+.meta-hoeveel { background: var(--sage-ultra); color: #5A6B4A; }
+.meta-waar { background: var(--rose-ultra); color: #8B5A5E; }
+.meta-custom { background: var(--lavender-light); color: #6B5A7A; font-style: italic; }
+
+/* Item actions (hide/delete) */
+.item-actions {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  margin-top: 1px;
+}
+.btn-hide, .btn-delete {
+  width: 24px; height: 24px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  font-size: 0.7rem;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.2s;
+  background: transparent;
+  color: var(--taupe);
+  opacity: 0;
+}
+.item:hover .btn-hide,
+.item:hover .btn-delete { opacity: 0.6; }
+.btn-hide:hover { background: var(--sand); opacity: 1 !important; color: var(--taupe-dark); }
+.btn-delete:hover { background: var(--rose-ultra); opacity: 1 !important; color: #B85A5E; }
+/* On touch devices, always show buttons */
+@media (hover: none) {
+  .btn-hide, .btn-delete { opacity: 0.5; }
+}
+
+/* Tip toggle */
+.tip-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.7rem;
+  color: var(--taupe);
+  cursor: pointer;
+  margin-top: 0.4rem;
+  padding: 0.2rem 0.5rem;
+  border-radius: 6px;
+  background: var(--sand);
+  transition: background 0.2s;
+  border: none;
+  font-family: inherit;
+}
+.tip-toggle:hover { background: var(--sand-dark); }
+.tip-text {
+  display: none;
+  margin-top: 0.4rem;
+  font-size: 0.8rem;
+  color: var(--text-light);
+  line-height: 1.5;
+  padding: 0.6rem 0.75rem;
+  background: var(--cream);
+  border-radius: 8px;
+  border-left: 3px solid var(--rose-light);
+  font-style: italic;
+}
+.tip-text.open { display: block; }
+
+/* To do timeline */
+.timeline-group { margin-bottom: 2rem; }
+.timeline-label {
+  font-family: 'Playfair Display', serif;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--taupe-dark);
+  padding: 0.5rem 0;
+  margin-bottom: 0.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.timeline-dot {
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  background: var(--rose);
+  flex-shrink: 0;
+}
+
+/* Hospital info box */
+.info-box {
+  background: linear-gradient(135deg, var(--rose-ultra), var(--lavender-light));
+  border-radius: 12px;
+  padding: 1rem 1.2rem;
+  margin-bottom: 1.5rem;
+  border: 1px solid var(--rose-light);
+}
+.info-box h3 {
+  font-family: 'Playfair Display', serif;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--taupe-dark);
+  margin-bottom: 0.3rem;
+}
+.info-box p {
+  font-size: 0.8rem;
+  color: var(--taupe);
+  line-height: 1.5;
+}
+
+/* Niet meenemen */
+.niet-meenemen {
+  background: var(--sage-ultra);
+  border: 1px solid var(--sage-light);
+  border-radius: 12px;
+  padding: 1rem 1.2rem;
+  margin-top: 1.5rem;
+}
+.niet-meenemen h3 {
+  font-family: 'Playfair Display', serif;
+  font-size: 0.95rem;
+  color: var(--taupe-dark);
+  margin-bottom: 0.5rem;
+}
+.niet-meenemen ul { list-style: none; padding: 0; }
+.niet-meenemen li {
+  font-size: 0.85rem;
+  color: var(--text-light);
+  padding: 0.25rem 0;
+  padding-left: 1.2rem;
+  position: relative;
+}
+.niet-meenemen li::before {
+  content: '\2713';
+  position: absolute;
+  left: 0;
+  color: var(--sage);
+  font-weight: 700;
+}
+
+/* Kledij merken */
+.merken-box {
+  background: var(--white);
+  border: 1px solid var(--sand);
+  border-radius: 12px;
+  padding: 1rem 1.2rem;
+  margin-bottom: 1.5rem;
+}
+.merken-box h3 { font-size: 0.8rem; font-weight: 600; color: var(--taupe-dark); margin-bottom: 0.2rem; }
+.merken-box p { font-size: 0.8rem; color: var(--text-light); line-height: 1.5; }
+.merken-box + .merken-box { margin-top: -0.5rem; }
+
+/* Reset & bottom buttons */
+.reset-wrap {
+  text-align: center;
+  padding: 2rem 0;
+  display: flex;
+  gap: 0.75rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+.reset-btn, .undo-btn {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.8rem;
+  color: var(--taupe);
+  background: var(--sand);
+  border: 1px solid var(--sand-dark);
+  padding: 0.5rem 1.2rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.reset-btn:hover, .undo-btn:hover { background: var(--sand-dark); }
+
+/* Filter pills */
+.filter-bar {
+  display: flex;
+  gap: 0.4rem;
+  padding: 0.75rem 0;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  flex-wrap: wrap;
+}
+.filter-pill {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.72rem;
+  font-weight: 500;
+  padding: 0.3rem 0.7rem;
+  border-radius: 20px;
+  border: 1px solid var(--sand-dark);
+  background: var(--white);
+  color: var(--taupe);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.2s;
+}
+.filter-pill:hover { background: var(--sand); }
+.filter-pill.active { background: var(--rose-light); border-color: var(--rose); color: var(--taupe-dark); }
+
+/* Search */
+.search-wrap { padding: 0.75rem 0 0.25rem; }
+.search-input {
+  width: 100%;
+  padding: 0.6rem 1rem;
+  border: 1px solid var(--sand-dark);
+  border-radius: 10px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.85rem;
+  background: var(--white);
+  color: var(--text);
+  outline: none;
+  transition: border 0.2s;
+}
+.search-input:focus { border-color: var(--rose); }
+.search-input::placeholder { color: var(--taupe); }
+
+/* Add item button */
+.add-item-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  width: 100%;
+  padding: 0.7rem;
+  margin-top: 0.5rem;
+  margin-bottom: 1rem;
+  border: 2px dashed var(--sand-dark);
+  border-radius: 12px;
+  background: transparent;
+  color: var(--taupe);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.8rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.add-item-btn:hover {
+  border-color: var(--rose);
+  background: var(--rose-ultra);
+  color: var(--taupe-dark);
+}
+
+/* Add form */
+.add-form {
+  background: var(--white);
+  border: 1px solid var(--rose-light);
+  border-radius: 12px;
+  padding: 1rem;
+  margin-top: 0.5rem;
+  margin-bottom: 1rem;
+  display: none;
+}
+.add-form.open { display: block; }
+.add-form-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 0.95rem;
+  color: var(--taupe-dark);
+  margin-bottom: 0.75rem;
+}
+.add-form-row {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+  flex-wrap: wrap;
+}
+.add-form-row input, .add-form-row select {
+  flex: 1;
+  min-width: 120px;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--sand-dark);
+  border-radius: 8px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.8rem;
+  background: var(--cream);
+  color: var(--text);
+  outline: none;
+}
+.add-form-row input:focus, .add-form-row select:focus { border-color: var(--rose); }
+.add-form-actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+.add-form-submit {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  background: var(--rose-light);
+  color: var(--taupe-dark);
+  transition: background 0.2s;
+}
+.add-form-submit:hover { background: var(--rose); }
+.add-form-cancel {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.8rem;
+  padding: 0.5rem 1rem;
+  border: 1px solid var(--sand-dark);
+  border-radius: 8px;
+  cursor: pointer;
+  background: var(--white);
+  color: var(--taupe);
+  transition: background 0.2s;
+}
+.add-form-cancel:hover { background: var(--sand); }
+
+/* Hidden items toggle */
+.hidden-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.3rem;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.75rem;
+  color: var(--taupe);
+  padding: 0.5rem;
+  cursor: pointer;
+  background: none;
+  border: none;
+  margin: 0.5rem auto;
+  transition: color 0.2s;
+}
+.hidden-toggle:hover { color: var(--taupe-dark); }
+
+/* Responsive */
+@media (min-width: 768px) {
+  .header { padding: 3rem 2rem 1.5rem; }
+  .header h1 { font-size: 2.5rem; }
+  .page { padding: 1.5rem 2rem 6rem; }
+  .tab { font-size: 0.85rem; padding: 0.9rem 1.2rem; }
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>Baby Checklist</h1>
+  <p>Van zwangerschapswens tot na de geboorte</p>
+  <p style="font-size:0.75rem;margin-top:0.5rem;opacity:0.7;position:relative">&copy; Emma Declerck</p>
+</div>
+
+<div class="progress-wrap">
+  <div class="progress-bar-bg"><div class="progress-bar-fill" id="progressFill"></div></div>
+  <div class="progress-text" id="progressText">0 / 0 afgevinkt</div>
+</div>
+
+<div class="tabs" id="tabs">
+  <button class="tab active" data-page="geboortelijst">Geboortelijst <span class="tab-count" id="count-geboortelijst"></span></button>
+  <button class="tab" data-page="kledij">Kledij <span class="tab-count" id="count-kledij"></span></button>
+  <button class="tab" data-page="todos">To do's <span class="tab-count" id="count-todos"></span></button>
+  <button class="tab" data-page="ziekenhuis">Ziekenhuiszak <span class="tab-count" id="count-ziekenhuis"></span></button>
+</div>
+
+<div class="page active" id="page-geboortelijst">
+  <div class="search-wrap">
+    <input type="text" class="search-input" placeholder="Zoek een product..." data-page="geboortelijst">
+  </div>
+  <div class="filter-bar" id="filters-geboortelijst"></div>
+  <div id="content-geboortelijst"></div>
+</div>
+
+<div class="page" id="page-kledij">
+  <div id="content-kledij"></div>
+</div>
+
+<div class="page" id="page-todos">
+  <div class="search-wrap">
+    <input type="text" class="search-input" placeholder="Zoek een taak..." data-page="todos">
+  </div>
+  <div id="content-todos"></div>
+</div>
+
+<div class="page" id="page-ziekenhuis">
+  <div id="content-ziekenhuis"></div>
+</div>
+
+<div class="reset-wrap">
+  <button class="reset-btn" onclick="resetAll()">Alle vinkjes resetten</button>
+  <button class="undo-btn" onclick="showHiddenItems()">Verborgen items tonen</button>
+  <button class="reset-btn" onclick="resetEverything()">Alles resetten</button>
+</div>
+
+<script>
+// === DATA ===
+const DATA = {
+  geboortelijst: [
+    {c:"Eten",p:"Afkolf-zakjes (50)",m:"Medela / Lansinoh",w:"Vanaf 6 weken"},
+    {c:"Eten",p:"Tripp Trapp",m:"Stokke",w:"Vanaf 6 weken"},
+    {c:"Eten",p:"Verkleinset tripp trapp",m:"Stokke",w:"Vanaf geboorte"},
+    {c:"Eten",p:"Babyset tripp trapp",m:"Stokke",w:"Vanaf 4-6 maanden"},
+    {c:"Eten",p:"Melkpoederdoosje",m:"We-Too",w:"Vanaf 6 weken",t:"Handiger dan melkpoedertoren, want je ziet goed wat er nog in zit + compacter van formaat"},
+    {c:"Eten",p:"Voedingskussen klein formaat (2)",m:"Doomoo",w:"Vanaf geboorte",t:"Kleine voedingskussens zijn handiger voor tijdens de borstvoeding, grote dienen eerder als zwangerschapskussens voor tijdens het slapen"},
+    {c:"Eten",p:"Combi stomer/mixer/sterilisator",m:"Nutribaby+ XL",w:"Vanaf 4-6 maanden"},
+    {c:"Eten",p:"Uitdruiprek flesjes",m:"?",w:"Vanaf geboorte"},
+    {c:"Eten",p:"Tetradoeken alle formaten: washandjes, monddoekjes, 70x70, XL",m:"Zeeman/Hema/Jollein",w:"Vanaf geboorte",t:"Je kan nooit genoeg tetradoeken hebben :) wij hebben er zeker 10"},
+    {c:"Eten",p:"Papflesjes klein",m:"Philips Avent",w:"Vanaf 6 weken",t:"Je hebt verschillende groottes van speentjes op de papfles en je zal de eerste keer verschillende maatjes moeten testen om te kijken wat het best werkt voor jouw baby: best dus een maatje 1-2-3 in huis halen om te testen."},
+    {c:"Eten",p:"Papflesjes groot",m:"Philips Avent",w:"Vanaf 4 maanden"},
+    {c:"Eten",p:"Slabbetjes",m:"JBC",w:"Vanaf 4-6 maanden"},
+    {c:"Eten",p:"Eet-schortje",m:"Liewood/IKEA",w:"Vanaf 4-6 maanden",t:"HEEL handig vanaf je met vaste voeding begint, want alles hangt vol :)."},
+    {c:"Eten",p:"Borstvoedingsbh (3)",m:"Cariwell",w:"Vanaf geboorte",t:"Had er ook een 'mooiere' van Seraphine, maar vond die zelf minder praktisch. Idealiter, kies je best eentje die je helemaal open kunt klikken voor de borstvoeding. Tip: best wachten tot einde van zwangerschap om te kopen, want je weet op voorhand niet hoeveel je borsten gaan groeien + maar eentje kopen tijdens zwangerschap en andere na de stuwing."},
+    {c:"Eten",p:"Tetra kwijlslabbetjes",m:"Temu",w:"Vanaf geboorte",t:"Heel handig voor tijdens de borstvoeding zodat je niet moet sukkelen met losse tetradoeken + wij laten die altijd nog lang aan na het eten voor als ze teruggeeft"},
+    {c:"Eten",p:"Flessenwarmer",m:"Philips Avent",w:"Vanaf 6 weken",t:"Microgolf kan ook, maar flessenwarmer zou 'beter' zijn en is ook compact dus gemakkelijk mee te nemen naar plekken waar geen microgolf is"},
+    {c:"Eten",p:"Afkolftoestel",m:"Ardo Medical",w:"Vanaf 6 weken",t:"Ik heb zo'n kolfconsult gedaan waarbij ik veel afkolftoestellen heb kunnen testen, want da's toch heel persoonlijk voor je type borsten."},
+    {c:"Eten",p:"Stokke tray",m:"Stokke",w:"Vanaf 4-6 maanden"},
+    {c:"Eten",p:"Flessenborstel",m:"Lidl",w:"Vanaf geboorte",t:"Wij spoelen die flesjes eigenlijk gewoon uit met warm water, wat zeep en goed schudden :)"},
+    {c:"Eten",p:"Zitkussen tripp trapp",m:"Jollein",w:"Vanaf 4-6 maanden",t:"Is in principe niet noodzakelijk, maar wel comfortabeler :)"},
+    {c:"Eten",p:"'Zachte' lepeltjes",m:"Zit bijna in alle gratis baby pakketten",w:"Vanaf 4-6 maanden"},
+    {c:"Eten",p:"Melkpoeder",m:"Nutrilon profutura 1 0-6 maanden",w:"Vanaf 4-6 maanden"},
+    {c:"Eten",p:"Siliconen ijsblokjes vormen met deksel voor melk & vaste voeding",m:"KitchenLove",w:"Vanaf 4-6 maanden"},
+    {c:"Op stap",p:"Draagzak",m:"Nuna Cudl (/ Ergobaby)",w:"Vanaf geboorte",t:"Heel gemakkelijk om zelf aan te doen dankzij magneetjes, wel minder ergonomisch voor jezelf om lang aan te doen, want heeft een velcroband en geen straps die je kan aantrekken op je heup."},
+    {c:"Op stap",p:"Reistentje",m:"Qute Q-camp (Deryan)",w:"Vanaf geboorte",t:"MEGA tevreden van, wij gebruiken dat al van bij de geboorte als 'reisbedje', maar ook bv voor aan het zwembad / tijdens de picknick etc."},
+    {c:"Op stap",p:"Isofix",m:"Britax Romer Select Vario Base",w:"Vanaf geboorte"},
+    {c:"Op stap",p:"Maxi-cosi & Adapters",m:"Britax Romer",w:"Vanaf geboorte"},
+    {c:"Op stap",p:"Autospiegel",m:"Deryan",w:"Vanaf geboorte"},
+    {c:"Op stap",p:"Trappelzak maxi-cosi",m:"Jollein",w:"Vanaf geboorte",t:"Zachter & warmer om in te liggen + makkelijker te reinigen bij ongelukjes."},
+    {c:"Op stap",p:"Zomer-overtrek maxi-cosi",m:"?",w:"Vanaf geboorte",t:"Handig voor als het warmer is + makkelijker te reinigen bij ongelukjes."},
+    {c:"Op stap",p:"Voetenzak",m:"Dubatti",w:"Vanaf 4-6 maanden"},
+    {c:"Op stap",p:"Regenhoes",m:"Dubatti",w:"Vanaf 4-6 maanden"},
+    {c:"Op stap",p:"Luierrugzak",m:"Dubatti",w:"Vanaf geboorte",t:"Wij raden echt een rugzak aan ipv een luiertas, veel handiger als je je handen al vol hebt met je baby :)"},
+    {c:"Op stap",p:"Buggy (inclusief mand & zitgedeelte)",m:"Dubatti (Two)",w:"Vanaf geboorte",t:"Heel tevreden van, maar enkel te verkrijgen bij Babydeals in BE. Zelfde categorie buggy als Joolz & Bugaboo."},
+    {c:"Op stap",p:"Fietskar",m:"Thule Courier 2 (via korting Helan zorgwinkel)",w:"Vanaf 4-6 maanden",t:"Wij geven voorkeur aan fietskar ipv bakfiets omdat je de fietskar ook als buggy kan gebruiken."},
+    {c:"Op stap",p:"Infant sling (hangmat Thule fietskar)",m:"Thule",w:"Vanaf 4-6 maanden",t:"Wij hebben die 2de hands gekocht, want je gebruikt die wel echt maar kort. Maar wel super nuttig & nodig voor in de fietskar de eerste maanden wanneer ze nog niet kunnen zitten."},
+    {c:"Op stap",p:"Kabelslot fietskar",m:"Abus Combiflex Trip 125cm",w:"Vanaf 4-6 maanden"},
+    {c:"Op stap",p:"Kleding & productlabels met naam",m:"Goedgemerkt",w:"Vanaf 4-6 maanden",t:"Handig om alles te labelen dat mee gaat naar de crèche"},
+    {c:"Op stap",p:"Zonnebril",m:"Helan zorgwinkel",w:"Vanaf geboorte"},
+    {c:"Op stap",p:"Zwembadkussen",m:"Fred's baby swimtrainer",w:"Vanaf 4-6 maanden",t:"Wij hebben deze gekozen omdat die tot 4 jaar gebruikt kan worden."},
+    {c:"Op stap",p:"Geluidwerende koptelefoon",m:"Helan zorgwinkel",w:"Vanaf 4-6 maanden"},
+    {c:"Slapen",p:"Nachtlampje",m:"Peertje van een marktje",w:"Vanaf geboorte",t:"Zou achteraf gezien eentje kiezen met verschillende standen, want tijdens borstvoeding heb je bv weinig licht nodig en tijdens verversen misschien wat meer."},
+    {c:"Slapen",p:"Babyfoon",m:"Qute Qsignal Connect",w:"Vanaf 4-6 maanden"},
+    {c:"Slapen",p:"Co-sleeper",m:"Puck - Claire",w:"Vanaf geboorte",t:"Kijk zeker voor eentje dat verstelbaar is in hoogte & een rekje heeft onderaan om gerief op te bergen."},
+    {c:"Slapen",p:"Dekentjes",m:"Wollen",w:"Vanaf geboorte",t:"Best zelf gebreid want die zijn het warmst en het veiligst (baby kan nog ademen als dat over gezichtje komt)."},
+    {c:"Slapen",p:"Tutjes",m:"Difrax / Bibs",w:"Vanaf geboorte",t:"Wij zijn gestart met een Difrax newborn tutje voor de eerste weken, omdat dat kleiner is, en dan overgeschakeld op Bibs tutjes."},
+    {c:"Slapen",p:"Moltonzeiljes (extra vocht-bescherming matras): voor wieg & bed",m:"Babsana",w:"Vanaf geboorte",t:"Niet zeker of dit echt nodig is :), baby's zweten ook niet echt. Maar bon, better safe than sorry?"},
+    {c:"Slapen",p:"Inbaker slaapzak (2)",m:"Puckababy",w:"Vanaf geboorte",t:"Eloïse zat niet graag ingebakerd, dus hebben onze inbakerslaapzak nooit gebruikt"},
+    {c:"Slapen",p:"Inbakerdoek XL",m:"TBC",w:"Vanaf geboorte",t:"Een doek hebben wij wel nog af en toe gebruikt om in te bakeren - meer dan een slaapzak."},
+    {c:"Slapen",p:"Slaapzak (2)",m:"Bemini",w:"Vanaf geboorte"},
+    {c:"Slapen",p:"Sluier & piekstok",m:"Jollein",w:"Vanaf geboorte",t:"Zeker geen must have :) maar wij vonden dat leuk als deco en om soms de zon wat af te schermen"},
+    {c:"Slapen",p:"Hoeslakens wieg, park, bed matrassen",m:"Jollein",w:"Vanaf geboorte"},
+    {c:"Slapen",p:"Matras bed + matrasbeschermer",m:"Pretura",w:"Vanaf geboorte"},
+    {c:"Slapen",p:"Zij-ligkussen",m:"?",w:"Vanaf geboorte",t:"Hebben wij niet gebruikt"},
+    {c:"Slapen",p:"Babykamer Junior: commode + ledikant + kast + bladvergroter",m:"TWF Waves XL",w:"Vanaf geboorte",t:"Wij hebben meteen een 'junior' bed gekozen van 1m40 lengte om er langer genieten van te hebben. De eerste maanden sliep ze hier toch in de co-sleeper."},
+    {c:"Slapen",p:"Baby nestje",m:"Doomoo",w:"Vanaf geboorte",t:"Hebben we echt superveel gebruikt. Wij hadden een zelfgemaakt, maar de vroedvrouw raadde die van Doomoo aan omdat die 'veiliger' zijn door hun harde randen."},
+    {c:"Slapen",p:"Wieg",m:"Vintage",w:"Vanaf geboorte",t:"Wij vonden een wiegje bij de geboorte leuker omdat ze zo klein was, maar is wel maar tot 4 maanden ong te gebruiken, dus meteen starten met een park kan zeker ook."},
+    {c:"Slapen",p:"Speenkoord / speendoekje",m:"Timboo en speenenkoord",w:"Vanaf geboorte"},
+    {c:"Spelen",p:"Looker play kit",m:"Lovevery",w:"Vanaf 6 weken",t:"De zwart/wit & kleur spiraal was by far Eloïse haar favoriete speeltje in de eerste maanden. Wij hingen die boven haar verzorgingstafel en ze vond dat echt geweldig."},
+    {c:"Spelen",p:"Speelmat",m:"Lovevery",w:"Vanaf 6 weken",t:"MEGA fan van deze speelmat. Iets duurder, maar echt de investering waard. Eloïse kan zich er mega goed zelf mee bezig houden en zelfs oudere kindjes vinden die speelmat nog kei tof."},
+    {c:"Spelen",p:"Bijtring",m:"Diverse",w:"Vanaf 6 weken"},
+    {c:"Spelen",p:"Park + matras",m:"2de hands",w:"Vanaf geboorte"},
+    {c:"Spelen",p:"Boxmobiel",m:"Nijntje",w:"Vanaf geboorte",t:"Hebben wij gekregen bij ons park, maar niet gebruikt."},
+    {c:"Spelen",p:"Park-omranding + kussen",m:"Jollein",w:"Vanaf geboorte"},
+    {c:"Spelen",p:"Wipstoel (incl. reservehoes)",m:"Baby Bjorn",w:"Vanaf 6 weken"},
+    {c:"Spelen",p:"Wipstoel speelboog",m:"Baby Bjorn",w:"Vanaf 6 weken",t:"Veel kindjes vinden dat geweldig maar Eloïse vond daar eigenlijk niet veel aan."},
+    {c:"Spelen",p:"Badspeelgoed",w:"Vanaf 6 maanden",t:"Tot nu toe nog niet gebruikt. Is pas voor latere leeftijd."},
+    {c:"Spelen",p:"Buitenspeeldoek",m:"Taf Toys",w:"Vanaf 6 weken"},
+    {c:"Spelen",p:"Knuffeltjes",w:"Vanaf geboorte"},
+    {c:"Verschonen",p:"Kapstokjes",m:"Zeeman",w:"Vanaf geboorte"},
+    {c:"Verschonen",p:"Luieremmer",m:"We-Too",w:"Vanaf geboorte"},
+    {c:"Verschonen",p:"Verschoonkussen",m:"We-Too / IKEA",w:"Vanaf geboorte",t:"Verschoonkussen van We-Too is handig omdat dat geen hoes nodig heeft (dus gemakkelijker af te kuisen), maar soms ook wel wat 'koud' voor 's nachts en te groot voor in de luiertafel van IKEA. Dus wij vonden het handig om de 2 te hebben."},
+    {c:"Verschonen",p:"Luiertafel",m:"IKEA",w:"Vanaf geboorte"},
+    {c:"Verschonen",p:"Verschoonkast",m:"IKEA",w:"Vanaf geboorte",t:"De eerste maanden is het het gemakkelijkst om alle kleren en verzorgingsmiddelen in 1 plek te hebben, bij voorkeur ergens in de living. Wij gebruiken een Billy kast van IKEA hiervoor (mega handig)."},
+    {c:"Verschonen",p:"Baby wasmiddel",m:"Le chat",w:"Vanaf geboorte"},
+    {c:"Verschonen",p:"Vlekkenspray",m:"Ossengalzeep Kruidvat",w:"Vanaf geboorte",t:"Echt nodig haha, baby kaka is super intens :)"},
+    {c:"Verschonen",p:"Luiers",m:"Kruidvat & Pampers",w:"Vanaf geboorte",t:"Wij zijn gestart met Pampers, maar al snel overgeschakeld op Kruidvat luiers. Heel tevreden van. Als je voor Pampers of een ander A-merk gaat, kijk dan zeker even op Luieraanbiedingen.net."},
+    {c:"Verschonen",p:"Babydoekjes",m:"Pampers Harmonie Aqua / Huggies",w:"Vanaf geboorte",t:"Recent overgeschakeld op Huggies, die zijn maar 1\u20AC per pakje in de Colruyt en super tevreden van."},
+    {c:"Verschonen",p:"Babybadje",m:"Shnuggle",w:"Vanaf geboorte",t:"MEGA fan van dit badje. Ze kunnen hier gemakkelijk zelf in blijven zitten, waardoor je ze ook alleen kan wassen en niet telkens met 2 moet zijn :)."},
+    {c:"Verschonen",p:"Bad thermometer",m:"Philips Avent",w:"Vanaf geboorte"},
+    {c:"Verschonen",p:"Baby verzorgingssetje",m:"Ziekenhuis (Mustela)",w:"Vanaf geboorte",t:"Wij zijn gestart met een babysetje gekocht in het ziekenhuis. Daar zat in: badolie, billenzalf, body lotion, zeep, thermometer."},
+    {c:"Verschonen",p:"Baby badolie",m:"Mustela",w:"Vanaf geboorte"},
+    {c:"Verschonen",p:"Baby lotion",m:"Mustela",w:"Vanaf geboorte"},
+    {c:"Verschonen",p:"Baby zalf met liniment",m:"Mustela",w:"Vanaf geboorte",t:"Gebruiken wij eigenlijk nooit."},
+    {c:"Verschonen",p:"Luieremmer + vuilzakjes",m:"We-too",w:"Vanaf geboorte",t:"Op zich heel tevreden van, maar is wel snel vol (niet zo groot)."},
+    {c:"Verschonen",p:"Verschoonkussen",m:"We-too",w:"Vanaf geboorte"},
+    {c:"Verzorgen",p:"Billenzalf",m:"Mustela",w:"Vanaf geboorte"},
+    {c:"Verzorgen",p:"Fysiologisch water capsules",m:"Physio Logica (apotheek)",w:"Vanaf geboorte",t:"Handig om neusje te spoelen als dat verstopt zit."},
+    {c:"Verzorgen",p:"Perdolan",m:"Apotheek",w:"Vanaf geboorte",t:"Zolang die niet open is, wordt die ook niet slecht. Dus sowieso handig om al in huis te hebben."},
+    {c:"Verzorgen",p:"Nagelsetje",m:"Difrax",w:"Vanaf geboorte"},
+    {c:"Verzorgen",p:"Kersenpitkussentje voor baby's",m:"Kipkep",w:"Vanaf geboorte",t:"Helpt om de krampjes te verlichten, zeker nuttig na de geboorte wanneer de darmpjes zich beginnen ontwikkelen."},
+    {c:"Verzorging mama",p:"Borstcompressen",m:"Lansinoh",w:"Vanaf geboorte",t:"Ik had eerst wegwerp, dan van Medela en dan van Lansinoh. Was zelf sowieso het meeste fan van herbruikbare (zachter) en die van Lansinoh bleven het best zitten door hun vorm."},
+    {c:"Verzorging mama",p:"Kompressen tepelkloven",m:"Multi-mam",w:"Vanaf geboorte"},
+    {c:"Verzorging mama",p:"Purelan lanoline cream",m:"Medela",w:"Vanaf geboorte"},
+    {c:"Verzorging mama",p:"Bevallingskleedje",m:"H&M",w:"Vanaf geboorte",t:"Ik heb gewoon zo'n lange, comfi slaapt-shirt van H&M gekocht daarvoor."},
+    {c:"Verzorging mama",p:"Comfortabele onderbroeken",m:"H&M",w:"Vanaf geboorte"},
+    {c:"Verzorging mama",p:"Slaapkledij met knoopjes voor borstvoeding",m:"Uniqlo",w:"Vanaf geboorte"},
+    {c:"Verzorging mama",p:"Peribottle",m:"Lansinoh",w:"Vanaf geboorte",t:"Zelf nooit gebruikt. In het ziekenhuis was er een Japans toilet en bij thuiskomst niet meer nodig gehad."},
+    {c:"Verzorging mama",p:"Ibuprofen & paracetamol"},
+    {c:"Verzorging mama",p:"Kraamverband",m:"Lansinoh",w:"Vanaf geboorte",t:"Zou zeker niet meer dan 1 pakje inslaan, want je mag overschot meenemen uit ziekenhuis en ben thuis snel overgeschakeld op gewoon maandverband ;)."},
+    {c:"Verzorging mama",p:"Therapearl warm-koud compres",m:"Lansinoh",w:"Vanaf geboorte"},
+    {c:"Verzorging mama",p:"Kamillosan oplossing",m:"Kamillosan",w:"Vanaf geboorte",t:"Aangeraden door Kind & Gezin, maar zelf nooit gebruikt/nodig gehad."}
+  ],
+  kledij: {
+    betaalbaar: "JBC / Zara / Zeeman / Hema / Kiabi / Next Direct (via Zalando)",
+    duurder: "Petit bateau / MarMar Copenhagen / Petit Indy / Filou & friends / Majoral / Lil'atelier",
+    items: [
+      {p:"Body's (met drukknopen die helemaal open kunnen)",m:"Zeeman/Hema",h:"minimum 6",w:"Vanaf geboorte"},
+      {p:"Pyjama's",m:"JBC/Zeeman/Hema",h:"6",w:"Vanaf geboorte"},
+      {p:"Kruippakjes / tshirts / broekjes",m:"Zie merken boven",h:"6 setjes",w:"Vanaf geboorte"},
+      {p:"Truitjes",m:"Zie merken boven",h:"4",w:"Vanaf geboorte"},
+      {p:"Jasjes",m:"Zie merken boven",h:"2",w:"Vanaf geboorte"},
+      {p:"Teddy/pilotenpakjes",m:"Zie merken boven",h:"2",w:"Vanaf geboorte"},
+      {p:"Zonnehoedje",m:"Zie merken boven",h:"2",w:"Vanaf geboorte"},
+      {p:"Mutsje",m:"Zie merken boven",h:"2",w:"Vanaf geboorte"},
+      {p:"Sokjes",m:"Zie merken boven",h:"4 paar",w:"Vanaf geboorte"},
+      {p:"Slofjes met koordje",m:"Noppies",h:"2 paar",w:"Vanaf geboorte",t:"Vonden wij heel handig want sokjes gaan heel gemakkelijk uit :)"},
+      {p:"Krabwantjes",m:"Maakt niet uit :)",h:"1 paar",w:"Vanaf geboorte",t:"Hebben wij enkel in het ziekenhuis gebruikt, dus zeker niet nodig om er massa's in te slaan :)"},
+      {p:"Zwempakje",m:"Mamas & papas",h:"1",w:"Vanaf 4-6 maanden",t:"Zeker niet te veel kopen want groeien daar heel snel uit"}
+    ]
+  },
+  todos: [
+    {d:"Foliumzuur starten",wr:"Apotheek",w:"Bij start zwangerschapswens",t:"Wordt deels terugbetaald door de mutualiteit",g:"Zwangerschapswens"},
+    {d:"Bloed trekken",wr:"Huisdokter",w:"Zodra positieve zwangerschapstest",g:"Eerste weken"},
+    {d:"Zwangerhap downloaden",wr:"App store",w:"Zodra positieve zwangerschapstest",g:"Eerste weken"},
+    {d:"Afspraak gynaecoloog maken",wr:"1e afspraak op 8 weken, nadien elke 4 weken",w:"Zodra positieve zwangerschapstest",g:"Eerste weken"},
+    {d:"Kinderopvang vastleggen",wr:"Kennismakingsgesprek > admin > wendaagjes",w:"Zodra zwangerschap bevestigd",t:"Best rondbellen, platformen van stad/gemeente zijn heel traag",g:"Eerste weken"},
+    {d:"Naam (en eventueel werknaam) kiezen",w:"8 weken",g:"8-12 weken"},
+    {d:"Familie en vrienden op de hoogte brengen",w:"8-12 weken",g:"8-12 weken"},
+    {d:"Peter en meter kiezen & vragen",wr:"Geefeenboompje.nl",w:"12 weken",g:"8-12 weken"},
+    {d:"Mutualiteiten vergelijken en eventueel wisselen",wr:"Spaargids.be",w:"13 weken",t:"Via spaargids.be kan je gemakkelijk voordelen selecteren die voor jullie belangrijk zijn en die mooi per mutualiteit naast elkaar zien.",g:"13-20 weken"},
+    {d:"Werk informeren en admin vragen",w:"13 weken",t:"Ter info: van zodra je je werk ge\u00efnformeerd hebt, ben je ook beschermd.",g:"13-20 weken"},
+    {d:"Zwangerschapsattest doorsturen werk",wr:"Attest kind & gezin ingevuld door gynaecoloog",w:"17 weken",g:"13-20 weken"},
+    {d:"Cr\u00e8me smeren tegen zwangerschapsstriemen",wr:"Purito B5 Pantheon Re-barrier Cream (Boozyshop)",w:"20 weken",t:"Was bij mij niet echt nodig, hangt een beetje van je lichaam af.",g:"13-20 weken"},
+    {d:"Zwangerschapsdiary bijhouden",wr:"Mooby",w:"20 weken",t:"Is een nice to have, leuk als herinnering voor later en om ge\u00efnteresseerden ge\u00efnformeerd te houden.",g:"13-20 weken"},
+    {d:"Inschrijven zwangerschapsinfo-sessies: borstvoeding & arbeid en bevalling",wr:"Bij ons bood het ziekenhuis die aan",w:"25 weken (te volgen vanaf 30 weken)",g:"25-28 weken"},
+    {d:"Aanvraag babyvoordelen",wr:"Mutualiteit (bij ons Helan)",w:"26 weken",g:"25-28 weken"},
+    {d:"Aanvraag groeipakket (startbedrag & kinderbijslag)",wr:"MyFamily (met bewijs zwangerschap)",w:"26 weken",t:"Uitbetaling startpakket (\u20AC1238) 2M voor uitgerekende datum / kinderbijslag (\u20AC180) automatisch elke 8ste van de maand na aangifte geboorte",g:"25-28 weken"},
+    {d:"Aanvraag vroedvrouw",wr:"10de maand",w:"26 weken",g:"25-28 weken"},
+    {d:"Aanvraag kraamzorg",wr:"Familiezorg",w:"26 weken",g:"25-28 weken"},
+    {d:"Erkenning vader bij gemeente",wr:"Gemeente (via online afspraak)",w:"27 weken",t:"Hierdoor hoef je na geboorte niet meer langs de gemeente en kan je de aangifte online afronden",g:"25-28 weken"},
+    {d:"Vaccinatie kinkhoest moeder & vader",wr:"Huisdokter",w:"28 weken",t:"Idealiter wordt iedereen die veel in contact zal komen met de baby gevaccineerd (bv ouders & grootouders).",g:"25-28 weken"},
+    {d:"Aangifte zwangerschap mutualiteit",wr:"Mutualiteit (Helan)",w:"28 weken",g:"25-28 weken"},
+    {d:"Baby startpakketten aanvragen",wr:"Apotheek (roze doos) + Babydeals + Kruidvat",w:"28 weken",t:"Koop vooral geen tutjes, flesjes en lepeltjes want dat zit bijna in elke doos. Die van de Kruidvat is veruit de meest waardevolle.",g:"25-28 weken"},
+    {d:"Kind en gezin afspraak inplannen",wr:"Automatisch gecontacteerd na aanvraag startbedrag",w:"30 weken",t:"Kennismakingsgesprek voor bevalling > vanaf 1 \u00e0 2 weken na thuiskomst komen zij een eerste keer langs.",g:"30-35 weken"},
+    {d:"Aanvraag gewaarborgd inkomen (indien extra verzekering bv via werk)",w:"30 weken",g:"30-35 weken"},
+    {d:"Check waarvoor je verzekerd bent bij bevalling (bv priv\u00e9kamer etc)",w:"30 weken",g:"30-35 weken"},
+    {d:"Baby-uitzet aankopen",wr:"Zie geboortelijst",w:"30 weken",t:"Wij hebben het merendeel gekocht via babydeals (winkel in Gent & Mechelen). En ook een deel 2dehands via Vinted & Facebook Marketplace.",g:"30-35 weken"},
+    {d:"Geboortekaartje ontwerpen",wr:"Canva of professionele designer bv festlab",w:"30 weken",g:"30-35 weken"},
+    {d:"Geboortelijst maken",wr:"Wix (eigen website) of pakske.be",w:"30 weken",g:"30-35 weken"},
+    {d:"Geboorte-attenties voorbereiden",w:"30 weken",g:"30-35 weken"},
+    {d:"Baby-kleren wassen",wr:"Le Chat baby wasmiddel",w:"32 weken",g:"30-35 weken"},
+    {d:"Verzamelen adressen",wr:"Verzameld via trouw/baby lijsten van vrienden",w:"32 weken",g:"30-35 weken"},
+    {d:"Ziekenhuis zak maken",w:"36 weken",g:"36-38 weken"},
+    {d:"Installeren babygerief",w:"36 weken",g:"36-38 weken"},
+    {d:"Enveloppen bestellen & schrijven",wr:"Temu & Avery",w:"38 weken",g:"36-38 weken"},
+    {d:"Postzegels bestellen en plakken",wr:"bpost (mystamp - tip: code voor zwangerschapskorting)",w:"38 weken",g:"36-38 weken"},
+    {d:"Aanpassen gegevens geboortekaartje",wr:"Printer",w:"Bij geboorte",g:"Bij geboorte"},
+    {d:"Geboortekaartjes drukken",wr:"Peter Print",w:"Bij geboorte",g:"Bij geboorte"},
+    {d:"Geboortekaartjes finaliseren en opsturen",g:"Bij geboorte"},
+    {d:"Familie en vrienden informeren",w:"Bij geboorte",g:"Bij geboorte"},
+    {d:"Hospitalisatieverzekering baby",w:"Bij geboorte",g:"Bij geboorte"},
+    {d:"Aangifte geboorte + erkenning vader",wr:"Online na geboorte",w:"Bij geboorte (tot 15 dagen nadien)",g:"Bij geboorte"},
+    {d:"Kraamzorg activeren",wr:"Familiezorg bellen om te zeggen dat ze mogen komen",w:"Bij geboorte",g:"Bij geboorte"},
+    {d:"Doorgeven exacte datum gewaarborgd inkomen",wr:"Enkel indien van toepassing",w:"Bij geboorte",g:"Bij geboorte"},
+    {d:"Aanvraag geboorteverlof mutualiteit",wr:"Helan - Geboorteakte kind",w:"Bij geboorte",g:"Bij geboorte"},
+    {d:"Geboorte-attenties afzetten op werk",w:"Bij geboorte",g:"Bij geboorte"},
+    {d:"Pasfoto laten maken voor Kids-ID",wr:"Professionele fotograaf",g:"Na geboorte"},
+    {d:"Kids-ID aanvragen",wr:"Gemeente",w:"Bij geboorte",g:"Na geboorte"},
+    {d:"1e consultatie kinderarts inplannen",wr:"Kinderarts",w:"Week na thuiskomst",g:"Na geboorte"},
+    {d:"Vaccinaties aankopen: bexsero & rotavirus",w:"Na geboorte",g:"Na geboorte"},
+    {d:"Postnatale kine inplannen",wr:"Kinesist",w:"6 weken na geboorte",g:"Na geboorte"},
+    {d:"Bexsero vaccinatie inplannen (niet via kind & gezin)",wr:"Huisdokter",w:"1e keer rond 12 weken",g:"Na geboorte"},
+    {d:"Terugbetalingen aanvragen (kraamzorg, kine, bexsero vaccin, consultaties,...)",wr:"Mutualiteit",g:"Na geboorte"},
+    {d:"Ouderschapsverlof aanvragen (indien van toepassing)",wr:"mysocialsecurity.be",w:"Tussen 3 tot 2 maanden voor opname",g:"Na geboorte"},
+    {d:"Inplannen wendaagjes cr\u00e8che",g:"Na geboorte"}
+  ],
+  ziekenhuis: {
+    items: [
+      {c:"Admin",w:"Identiteitskaart"},{c:"Admin",w:"Gele klevers"},{c:"Admin",w:"Verzekeringskaarten/formulieren"},{c:"Admin",w:"Bloedgroepkaart"},{c:"Admin",w:"Zwangerschapsboekje kind & gezin"},
+      {c:"Bezoek",w:"Geboorte-attenties"},{c:"Bezoek",w:"Geboorte-kaartjes",t:"Eventueel ook leuk om front-cover geboortekaartje in posterformaat af te drukken (om bij attenties te zetten) en in kaartformaat (om aan ziekenhuisdeur te hangen voor bezoek)"},
+      {c:"Comfort",w:"Eigen kussen"},{c:"Comfort",w:"Dekentje"},{c:"Comfort",w:"Water sprayfles",t:"Niet gebruikt, er was een Japans toilet in het ziekenhuis"},{c:"Comfort",w:"Borstvoedingslampje"},{c:"Comfort",w:"Borstvoedingskussen klein"},
+      {c:"Elektronica",w:"Laders"},{c:"Elektronica",w:"Ipad"},{c:"Elektronica",w:"Gsm"},{c:"Elektronica",w:"E-reader"},{c:"Elektronica",w:"Airpods"},{c:"Elektronica",w:"Spotify lijst"},
+      {c:"Kledij kind",w:"6 body's"},{c:"Kledij kind",w:"6 pyjama's"},{c:"Kledij kind",w:"6 pakjes"},{c:"Kledij kind",w:"6 paar kousen"},{c:"Kledij kind",w:"Mutsjes"},{c:"Kledij kind",w:"Krabwantjes"},{c:"Kledij kind",w:"2 slabbetjes"},{c:"Kledij kind",w:"3 tetra-doeken"},{c:"Kledij kind",w:"Jasje"},
+      {c:"Kledij mama",w:"Bevallingskleedje"},{c:"Kledij mama",w:"Pyjama met knoopjes voor borstvoeding"},{c:"Kledij mama",w:"Kamerjas"},{c:"Kledij mama",w:"Housepak"},{c:"Kledij mama",w:"Comfortabele kledij"},{c:"Kledij mama",w:"Pantoffels en slippers"},{c:"Kledij mama",w:"Sokken"},{c:"Kledij mama",w:"Borstvoedingsbh"},{c:"Kledij mama",w:"Borstkompressen (herbruikbaar)",t:"Enkel nodig als je dat liever hebt dan die wegwerp - ik vond die zelf nogal hard/vies."},
+      {c:"Kledij papa",w:"Pyjama, toiletzak, kledij, ondergoed, lader, tijdschriften"},
+      {c:"Op stap",w:"Buggy"},{c:"Op stap",w:"Maxi-cosy"},{c:"Op stap",w:"Autospiegel"},
+      {c:"Verzorging",w:"Shampoo & zeep (zo natuurlijk mogelijk)"},{c:"Verzorging",w:"Wiegdekentje"},{c:"Verzorging",w:"Tetradoeken"},{c:"Verzorging",w:"Inbakerdoek en/of slaapzak"},{c:"Verzorging",w:"Toiletzak"},{c:"Verzorging",w:"Wegwerpwashandjes",t:"Heb ik uiteindelijk niet gebruikt zelf."},{c:"Verzorging",w:"Handdoeken"},
+      {c:"Voeding",w:"Cava"},{c:"Voeding",w:"Snijmesje (om fruit te snijden)",t:"Anders moet je een appel snijden met een gewoon eetmes :) levensgevaarlijk"},{c:"Voeding",w:"Sportdrank"},{c:"Voeding",w:"Druivensuiker"},{c:"Voeding",w:"Koekjes, chips"},{c:"Voeding",w:"Cola, ice-tea, koffie-pads, melk"},{c:"Voeding",w:"Koffiezet"},
+      {c:"Attentie",w:"Bedanking ziekenhuispersoneel",t:"Wij hebben kaartjes achtergelaten en een grote lading nespresso koffiepads :)"}
+    ],
+    niet: ["Maandverbanden","Borstcompressen (wegwerp)","Grote onderbroeken","Luiers","Verzorgingssetje baby","Groot borstvoedingskussen"]
+  }
+};
+
+const CAT_STYLE = {
+  "Eten":{icon:"\ud83c\udf7c",bg:"#FBE9EB"},"Op stap":{icon:"\ud83d\ude97",bg:"#E8E0ED"},"Slapen":{icon:"\ud83c\udf19",bg:"#E0E8F0"},"Spelen":{icon:"\ud83e\uddf8",bg:"#F8E2CD"},"Verschonen":{icon:"\ud83d\udebf",bg:"#EBF0E4"},"Verzorgen":{icon:"\ud83e\ude79",bg:"#FBE9EB"},"Verzorging mama":{icon:"\ud83d\udc95",bg:"#F5D5D8"},
+  "Admin":{icon:"\ud83d\udcdd",bg:"#F5EDE6"},"Bezoek":{icon:"\ud83c\udf81",bg:"#F8E2CD"},"Comfort":{icon:"\u2615",bg:"#E8E0ED"},"Elektronica":{icon:"\ud83d\udd0c",bg:"#E0E8F0"},"Kledij kind":{icon:"\ud83d\udc76",bg:"#FBE9EB"},"Kledij mama":{icon:"\ud83d\udc57",bg:"#F5D5D8"},"Kledij papa":{icon:"\ud83d\udc54",bg:"#E0E8F0"},
+  "Verzorging":{icon:"\ud83e\uddf4",bg:"#EBF0E4"},"Voeding":{icon:"\ud83c\udf4e",bg:"#F8E2CD"},"Attentie":{icon:"\ud83d\udc9d",bg:"#FBE9EB"},"Eten ":{icon:"\ud83c\udf7c",bg:"#FBE9EB"}
+};
+
+// === STORAGE ===
+const K_CHECKED = 'baby-checklist-v1';
+const K_HIDDEN  = 'baby-checklist-hidden';
+const K_CUSTOM  = 'baby-checklist-custom';
+const K_MERKEN  = 'baby-checklist-merken';
+
+let checked = {};
+let hidden  = {};
+let custom  = { gb: [], kl: [], td: [], zh: [] };
+let merken  = {};
+
+function loadStorage() {
+  try { checked = JSON.parse(localStorage.getItem(K_CHECKED)) || {}; } catch(e) { checked = {}; }
+  try { hidden  = JSON.parse(localStorage.getItem(K_HIDDEN))  || {}; } catch(e) { hidden  = {}; }
+  try { custom  = JSON.parse(localStorage.getItem(K_CUSTOM))  || { gb:[], kl:[], td:[], zh:[] }; } catch(e) { custom = { gb:[], kl:[], td:[], zh:[] }; }
+  try { merken  = JSON.parse(localStorage.getItem(K_MERKEN))  || {}; } catch(e) { merken = {}; }
+  if (!custom.gb) custom.gb = [];
+  if (!custom.kl) custom.kl = [];
+  if (!custom.td) custom.td = [];
+  if (!custom.zh) custom.zh = [];
+}
+function saveChecked() { localStorage.setItem(K_CHECKED, JSON.stringify(checked)); }
+function saveHidden()  { localStorage.setItem(K_HIDDEN, JSON.stringify(hidden)); }
+function saveCustom()  { localStorage.setItem(K_CUSTOM, JSON.stringify(custom)); }
+function saveMerken()  { localStorage.setItem(K_MERKEN, JSON.stringify(merken)); }
+
+loadStorage();
+
+// === SORTING ===
+function wanneerOrder(w) {
+  if (!w) return 99;
+  const s = w.toLowerCase().trim();
+  if (s.includes('vanaf geboorte')) return 10;
+  if (s.includes('vanaf 6 weken') || s === '6 weken') return 20;
+  if (s.includes('vanaf 4 maanden')) return 30;
+  if (s.includes('vanaf 4-6 maanden')) return 35;
+  if (s.includes('vanaf 6 maanden')) return 40;
+  if (s.includes('zwangerschapswens')) return 0;
+  if (s.includes('positieve zwangerschapstest')) return 1;
+  if (s.includes('zwangerschap bevestigd')) return 2;
+  const weekMatch = s.match(/(\d+)\s*weken/);
+  if (weekMatch) return 3 + parseInt(weekMatch[1]) * 0.1;
+  if (s.includes('bij geboorte') || s.includes('na geboorte')) return 50;
+  if (s.includes('thuiskomst')) return 55;
+  return 90;
+}
+
+function sortByWanneer(items, wanneerKey) {
+  return [...items].sort((a, b) => wanneerOrder(a[wanneerKey]) - wanneerOrder(b[wanneerKey]));
+}
+
+// === HELPERS ===
+function esc(s) {
+  const d = document.createElement('div');
+  d.textContent = s;
+  return d.innerHTML;
+}
+
+function renderTip(tip) {
+  if (!tip) return '';
+  return '<button class="tip-toggle" onclick="this.nextElementSibling.classList.toggle(\'open\'); this.querySelector(\'span\').textContent = this.nextElementSibling.classList.contains(\'open\') ? \'\u25B2 Tip\' : \'\u25BC Tip\'"><span>\u25BC Tip</span></button><div class="tip-text">' + esc(tip) + '</div>';
+}
+
+function renderItem(id, name, meta, tip, isCustom) {
+  if (hidden[id]) return '';
+  const isChecked = checked[id] || false;
+  const customClass = isCustom ? ' custom-item' : '';
+  const actionBtn = isCustom
+    ? '<button class="btn-delete" onclick="deleteCustomItem(\'' + id + '\')" title="Verwijderen">\u2715</button>'
+    : '<button class="btn-hide" onclick="hideItem(\'' + id + '\')" title="Verbergen">\u2715</button>';
+  return '<div class="item' + (isChecked ? ' checked' : '') + customClass + '" data-id="' + id + '">' +
+    '<div class="checkbox' + (isChecked ? ' checked' : '') + '" onclick="toggleCheck(\'' + id + '\', this)"></div>' +
+    '<div class="item-content">' +
+      '<div class="item-name">' + esc(name) + '</div>' +
+      (meta ? '<div class="item-meta">' + meta + '</div>' : '') +
+      renderTip(tip) +
+    '</div>' +
+    '<div class="item-actions">' + actionBtn + '</div>' +
+  '</div>';
+}
+
+function toggleCheck(id, el) {
+  checked[id] = !checked[id];
+  saveChecked();
+  const item = el.closest('.item');
+  item.classList.toggle('checked');
+  el.classList.toggle('checked');
+  updateProgress();
+}
+
+function hideItem(id) {
+  hidden[id] = true;
+  saveHidden();
+  const el = document.querySelector('[data-id="' + id + '"]');
+  if (el) el.style.display = 'none';
+  updateProgress();
+}
+
+function deleteCustomItem(id) {
+  const parts = id.split('-custom-');
+  const prefix = parts[0];
+  const idx = parseInt(parts[1]);
+  custom[prefix].splice(idx, 1);
+  delete checked[id];
+  saveCustom();
+  saveChecked();
+  rerender();
+}
+
+function editMerk(id, currentMerk, el) {
+  const parent = el.parentElement;
+  el.style.display = 'none';
+  const wrap = document.createElement('div');
+  wrap.className = 'merk-edit-wrap';
+  const input = document.createElement('input');
+  input.className = 'merk-edit-input';
+  input.type = 'text';
+  input.value = currentMerk;
+  input.placeholder = 'Merk';
+  const okBtn = document.createElement('button');
+  okBtn.className = 'merk-edit-ok';
+  okBtn.textContent = '\u2713';
+  const cancelBtn = document.createElement('button');
+  cancelBtn.className = 'merk-edit-cancel';
+  cancelBtn.textContent = '\u2715';
+  wrap.appendChild(input);
+  wrap.appendChild(okBtn);
+  wrap.appendChild(cancelBtn);
+  parent.insertBefore(wrap, el.nextSibling);
+  input.focus();
+  input.select();
+
+  function save() {
+    const val = input.value.trim();
+    if (val && val !== currentMerk) {
+      merken[id] = val;
+      saveMerken();
+    } else if (!val) {
+      delete merken[id];
+      saveMerken();
+    }
+    wrap.remove();
+    rerender();
+  }
+  function cancel() {
+    wrap.remove();
+    el.style.display = '';
+  }
+  okBtn.addEventListener('click', save);
+  cancelBtn.addEventListener('click', cancel);
+  input.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') save();
+    if (e.key === 'Escape') cancel();
+  });
+}
+
+function getMerk(id, originalMerk) {
+  return merken[id] !== undefined ? merken[id] : originalMerk;
+}
+
+function showHiddenItems() {
+  const count = Object.keys(hidden).length;
+  if (count === 0) { alert('Er zijn geen verborgen items.'); return; }
+  if (confirm(count + ' verborgen item(s) weer tonen?')) {
+    hidden = {};
+    saveHidden();
+    rerender();
+  }
+}
+
+function getAllVisibleIds() {
+  const ids = [];
+  DATA.geboortelijst.forEach((_, i) => { const id = 'gb-' + i; if (!hidden[id]) ids.push(id); });
+  DATA.kledij.items.forEach((_, i) => { const id = 'kl-' + i; if (!hidden[id]) ids.push(id); });
+  DATA.todos.forEach((_, i) => { const id = 'td-' + i; if (!hidden[id]) ids.push(id); });
+  DATA.ziekenhuis.items.forEach((_, i) => { const id = 'zh-' + i; if (!hidden[id]) ids.push(id); });
+  custom.gb.forEach((_, i) => { const id = 'gb-custom-' + i; if (!hidden[id]) ids.push(id); });
+  custom.kl.forEach((_, i) => { const id = 'kl-custom-' + i; if (!hidden[id]) ids.push(id); });
+  custom.td.forEach((_, i) => { const id = 'td-custom-' + i; if (!hidden[id]) ids.push(id); });
+  custom.zh.forEach((_, i) => { const id = 'zh-custom-' + i; if (!hidden[id]) ids.push(id); });
+  return ids;
+}
+
+function updateProgress() {
+  const allIds = getAllVisibleIds();
+  const total = allIds.length;
+  const done = allIds.filter(id => checked[id]).length;
+  const pct = total ? Math.round((done / total) * 100) : 0;
+  document.getElementById('progressFill').style.width = pct + '%';
+  document.getElementById('progressText').textContent = done + ' / ' + total + ' afgevinkt (' + pct + '%)';
+  updateTabCounts();
+}
+
+function updateTabCounts() {
+  function countPage(prefix, baseLen, customArr) {
+    let total = 0, done = 0;
+    for (let i = 0; i < baseLen; i++) { const id = prefix + '-' + i; if (!hidden[id]) { total++; if (checked[id]) done++; } }
+    for (let i = 0; i < customArr.length; i++) { const id = prefix + '-custom-' + i; if (!hidden[id]) { total++; if (checked[id]) done++; } }
+    return { done, total };
+  }
+  const pages = {
+    geboortelijst: countPage('gb', DATA.geboortelijst.length, custom.gb),
+    kledij: countPage('kl', DATA.kledij.items.length, custom.kl),
+    todos: countPage('td', DATA.todos.length, custom.td),
+    ziekenhuis: countPage('zh', DATA.ziekenhuis.items.length, custom.zh)
+  };
+  for (const [page, info] of Object.entries(pages)) {
+    document.getElementById('count-' + page).textContent = info.done + '/' + info.total;
+  }
+}
+
+// === ADD ITEM FORMS ===
+function toggleAddForm(page) {
+  document.querySelectorAll('.add-form[data-page="' + page + '"]').forEach(form => {
+    form.classList.toggle('open');
+    if (form.classList.contains('open')) {
+      form.querySelector('input').focus();
+    }
+  });
+}
+
+function addCustomItem(page, btn) {
+  const form = btn.closest('.add-form');
+  const inputs = form.querySelectorAll('input, select');
+  const name = inputs[0].value.trim();
+  if (!name) { inputs[0].focus(); return; }
+
+  let item = {};
+  if (page === 'gb') {
+    item = { c: inputs[1].value || 'Eigen', p: name, m: inputs[2].value.trim(), w: inputs[3].value.trim() };
+  } else if (page === 'kl') {
+    item = { p: name, m: inputs[1].value.trim(), h: inputs[2].value.trim(), w: inputs[3].value.trim() };
+  } else if (page === 'td') {
+    item = { d: name, wr: inputs[1].value.trim(), w: inputs[2].value.trim(), g: inputs[3].value || 'Eigen' };
+  } else if (page === 'zh') {
+    item = { c: inputs[1].value || 'Eigen', w: name };
+  }
+
+  custom[page].push(item);
+  saveCustom();
+  inputs.forEach(i => { if (i.tagName === 'INPUT') i.value = ''; });
+  form.classList.remove('open');
+  rerender();
+}
+
+// === FORM BUILDERS ===
+function buildAddForm(page, title, fieldsHtml) {
+  return '<button class="add-item-btn" onclick="toggleAddForm(\'' + page + '\')">+ ' + esc(title) + '</button>' +
+    '<div class="add-form" data-page="' + page + '"><div class="add-form-title">' + esc(title) + '</div>' +
+    fieldsHtml +
+    '<div class="add-form-actions"><button class="add-form-submit" onclick="addCustomItem(\'' + page + '\', this)">Toevoegen</button><button class="add-form-cancel" onclick="toggleAddForm(\'' + page + '\')">Annuleren</button></div></div>';
+}
+
+function gbFormHtml() {
+  const gbCats = [...new Set(DATA.geboortelijst.map(i => i.c))];
+  return buildAddForm('gb', 'Item toevoegen',
+    '<div class="add-form-row"><input type="text" placeholder="Product naam *" onkeydown="if(event.key===\'Enter\')addCustomItem(\'gb\', this)">' +
+    '<select>' + gbCats.map(c => '<option value="' + esc(c) + '">' + esc(c) + '</option>').join('') + '<option value="Eigen">Eigen categorie</option></select></div>' +
+    '<div class="add-form-row"><input type="text" placeholder="Merk (optioneel)"><input type="text" placeholder="Wanneer (optioneel)"></div>');
+}
+
+function klFormHtml() {
+  return buildAddForm('kl', 'Kledingstuk toevoegen',
+    '<div class="add-form-row"><input type="text" placeholder="Kledingstuk *" onkeydown="if(event.key===\'Enter\')addCustomItem(\'kl\', this)"><input type="text" placeholder="Merk (optioneel)"></div>' +
+    '<div class="add-form-row"><input type="text" placeholder="Hoeveel (optioneel)"><input type="text" placeholder="Wanneer (optioneel)"></div>');
+}
+
+function tdFormHtml() {
+  const tdGroups = [...new Set(DATA.todos.map(t => t.g))];
+  return buildAddForm('td', 'Taak toevoegen',
+    '<div class="add-form-row"><input type="text" placeholder="Taak omschrijving *" onkeydown="if(event.key===\'Enter\')addCustomItem(\'td\', this)"><input type="text" placeholder="Waar (optioneel)"></div>' +
+    '<div class="add-form-row"><input type="text" placeholder="Wanneer (optioneel)">' +
+    '<select>' + tdGroups.map(g => '<option value="' + esc(g) + '">' + esc(g) + '</option>').join('') + '<option value="Eigen">Eigen periode</option></select></div>');
+}
+
+function zhFormHtml() {
+  const zhCats = [...new Set(DATA.ziekenhuis.items.map(i => i.c))];
+  return buildAddForm('zh', 'Item toevoegen',
+    '<div class="add-form-row"><input type="text" placeholder="Wat meenemen *" onkeydown="if(event.key===\'Enter\')addCustomItem(\'zh\', this)">' +
+    '<select>' + zhCats.map(c => '<option value="' + esc(c) + '">' + esc(c) + '</option>').join('') + '<option value="Eigen">Eigen categorie</option></select></div>');
+}
+
+// === RENDER ===
+function renderGeboortelijst() {
+  const container = document.getElementById('content-geboortelijst');
+  const allItems = [...DATA.geboortelijst, ...custom.gb.map(i => ({...i, _custom: true}))];
+  const cats = [...new Set(allItems.map(i => i.c))];
+
+  const filterBar = document.getElementById('filters-geboortelijst');
+  filterBar.innerHTML = '<button class="filter-pill active" onclick="setFilter(\'Alles\', this)">Alles</button>' +
+    cats.map(c => '<button class="filter-pill" onclick="setFilter(\'' + esc(c) + '\', this)">' + esc(c) + '</button>').join('');
+
+  let html = gbFormHtml();
+
+  cats.forEach(cat => {
+    const items = sortByWanneer(allItems.filter(i => i.c === cat), 'w');
+    const s = CAT_STYLE[cat] || { icon: '\u2728', bg: '#F5EDE6' };
+    const visibleCount = items.filter(item => {
+      const isCustom = item._custom;
+      const idx = isCustom ? custom.gb.indexOf(item) || custom.gb.findIndex(ci => ci.p === item.p && ci.c === item.c) : DATA.geboortelijst.indexOf(item);
+      const id = isCustom ? 'gb-custom-' + idx : 'gb-' + idx;
+      return !hidden[id];
+    }).length;
+
+    html += '<div class="category" data-cat="' + esc(cat) + '">' +
+      '<div class="category-header" onclick="this.parentElement.classList.toggle(\'collapsed\')">' +
+        '<div class="category-icon" style="background:' + s.bg + '">' + s.icon + '</div>' +
+        '<h2>' + esc(cat) + '</h2>' +
+        '<span class="category-count">' + visibleCount + '</span>' +
+        '<span class="category-chevron">\u25BC</span>' +
+      '</div><div class="category-items">';
+
+    items.forEach(item => {
+      const isCustom = !!item._custom;
+      let idx, id;
+      if (isCustom) {
+        idx = custom.gb.findIndex(ci => ci === item || (ci.p === item.p && ci.c === item.c));
+        id = 'gb-custom-' + idx;
+      } else {
+        idx = DATA.geboortelijst.indexOf(item);
+        id = 'gb-' + idx;
+      }
+      const displayMerk = getMerk(id, item.m);
+      let meta = '';
+      if (displayMerk) meta += '<span class="meta-tag meta-merk" onclick="editMerk(\'' + id + '\', \'' + esc(displayMerk).replace(/'/g, "\\'") + '\', this)">' + esc(displayMerk) + '</span>';
+      if (item.w) meta += '<span class="meta-tag meta-wanneer">' + esc(item.w) + '</span>';
+      if (isCustom) meta += '<span class="meta-tag meta-custom">eigen toevoeging</span>';
+      if (!displayMerk && item.p) meta += '<span class="meta-tag meta-merk" style="opacity:0.4;border:1px dashed var(--lavender)" onclick="editMerk(\'' + id + '\', \'\', this)">+ merk</span>';
+      html += renderItem(id, item.p, meta, item.t, isCustom);
+    });
+    html += '</div></div>';
+  });
+
+  container.innerHTML = html;
+}
+
+function setFilter(cat, el) {
+  document.querySelectorAll('#filters-geboortelijst .filter-pill').forEach(p => p.classList.remove('active'));
+  el.classList.add('active');
+  document.querySelectorAll('#content-geboortelijst .category').forEach(c => {
+    c.style.display = (cat === 'Alles' || c.dataset.cat === cat) ? '' : 'none';
+  });
+}
+
+function renderKledij() {
+  const container = document.getElementById('content-kledij');
+  let html = '<div class="merken-box"><h3>Betaalbare merken</h3><p>' + esc(DATA.kledij.betaalbaar) + '</p></div>';
+  html += '<div class="merken-box" style="margin-top:0.5rem;margin-bottom:1.5rem"><h3>Duurdere merken</h3><p>' + esc(DATA.kledij.duurder) + '</p></div>';
+
+  html += klFormHtml();
+
+  const allKledij = [
+    ...DATA.kledij.items.map((item, i) => ({...item, _id: 'kl-' + i, _custom: false})),
+    ...custom.kl.map((item, i) => ({...item, _id: 'kl-custom-' + i, _custom: true}))
+  ];
+  sortByWanneer(allKledij, 'w').forEach(item => {
+    const displayMerk = getMerk(item._id, item.m);
+    let meta = '';
+    if (displayMerk) meta += '<span class="meta-tag meta-merk" onclick="editMerk(\'' + item._id + '\', \'' + esc(displayMerk).replace(/'/g, "\\'") + '\', this)">' + esc(displayMerk) + '</span>';
+    if (item.h) meta += '<span class="meta-tag meta-hoeveel">' + esc(item.h) + '</span>';
+    if (item.w) meta += '<span class="meta-tag meta-wanneer">' + esc(item.w) + '</span>';
+    if (item._custom) meta += '<span class="meta-tag meta-custom">eigen toevoeging</span>';
+    if (!displayMerk) meta += '<span class="meta-tag meta-merk" style="opacity:0.4;border:1px dashed var(--lavender)" onclick="editMerk(\'' + item._id + '\', \'\', this)">+ merk</span>';
+    html += renderItem(item._id, item.p, meta, item.t, item._custom);
+  });
+
+  container.innerHTML = html;
+}
+
+function renderTodos() {
+  const container = document.getElementById('content-todos');
+  const allTodos = [...DATA.todos, ...custom.td.map(i => ({...i, _custom: true}))];
+  const groups = [...new Set(allTodos.map(t => t.g))];
+
+  let html = tdFormHtml();
+
+  groups.forEach(group => {
+    const items = allTodos.filter(t => t.g === group);
+    html += '<div class="timeline-group"><div class="timeline-label"><span class="timeline-dot"></span>' + esc(group) + '</div>';
+    items.forEach(item => {
+      const isCustom = !!item._custom;
+      let idx, id;
+      if (isCustom) {
+        idx = custom.td.findIndex(ci => ci === item || (ci.d === item.d && ci.g === item.g));
+        id = 'td-custom-' + idx;
+      } else {
+        idx = DATA.todos.indexOf(item);
+        id = 'td-' + idx;
+      }
+      let meta = '';
+      if (item.wr) meta += '<span class="meta-tag meta-waar">' + esc(item.wr) + '</span>';
+      if (item.w) meta += '<span class="meta-tag meta-wanneer">' + esc(item.w) + '</span>';
+      if (isCustom) meta += '<span class="meta-tag meta-custom">eigen toevoeging</span>';
+      html += renderItem(id, item.d, meta, item.t, isCustom);
+    });
+    html += '</div>';
+  });
+
+  container.innerHTML = html;
+}
+
+function renderZiekenhuis() {
+  const container = document.getElementById('content-ziekenhuis');
+  let html = '<div class="info-box"><h3>2 zakken klaarzetten</h3><p>1 voor het verloskwartier, 1 voor de kamer. Zet je zak klaar rond 36 weken.</p></div>';
+
+  html += zhFormHtml();
+
+  const allItems = [...DATA.ziekenhuis.items, ...custom.zh.map(i => ({...i, _custom: true}))];
+  const cats = [...new Set(allItems.map(i => i.c))];
+
+  cats.forEach(cat => {
+    const items = allItems.filter(i => i.c === cat);
+    const s = CAT_STYLE[cat] || { icon: '\u2728', bg: '#F5EDE6' };
+    const visibleCount = items.filter(item => {
+      const isCustom = !!item._custom;
+      const idx = isCustom ? custom.zh.findIndex(ci => ci === item || (ci.w === item.w && ci.c === item.c)) : DATA.ziekenhuis.items.indexOf(item);
+      const id = isCustom ? 'zh-custom-' + idx : 'zh-' + idx;
+      return !hidden[id];
+    }).length;
+
+    html += '<div class="category">' +
+      '<div class="category-header" onclick="this.parentElement.classList.toggle(\'collapsed\')">' +
+        '<div class="category-icon" style="background:' + s.bg + '">' + s.icon + '</div>' +
+        '<h2>' + esc(cat) + '</h2>' +
+        '<span class="category-count">' + visibleCount + '</span>' +
+        '<span class="category-chevron">\u25BC</span>' +
+      '</div><div class="category-items">';
+
+    items.forEach(item => {
+      const isCustom = !!item._custom;
+      let idx, id;
+      if (isCustom) {
+        idx = custom.zh.findIndex(ci => ci === item || (ci.w === item.w && ci.c === item.c));
+        id = 'zh-custom-' + idx;
+      } else {
+        idx = DATA.ziekenhuis.items.indexOf(item);
+        id = 'zh-' + idx;
+      }
+      let meta = isCustom ? '<span class="meta-tag meta-custom">eigen toevoeging</span>' : '';
+      html += renderItem(id, item.w, meta, item.t, isCustom);
+    });
+    html += '</div></div>';
+  });
+
+  html += '<div class="niet-meenemen"><h3>Niet meenemen (aanwezig in ziekenhuis)</h3><p style="font-size:0.75rem;color:#7A6E65;margin-bottom:0.5rem">Best even op voorhand checken bij je ziekenhuis</p><ul>';
+  DATA.ziekenhuis.niet.forEach(item => { html += '<li>' + esc(item) + '</li>'; });
+  html += '</ul></div>';
+
+  container.innerHTML = html;
+}
+
+// Search
+document.querySelectorAll('.search-input').forEach(input => {
+  input.addEventListener('input', function() {
+    const query = this.value.toLowerCase();
+    const page = this.dataset.page;
+    document.getElementById('content-' + page).querySelectorAll('.item').forEach(item => {
+      const text = item.textContent.toLowerCase();
+      item.style.display = (text.includes(query) && !hidden[item.dataset.id]) ? '' : 'none';
+    });
+  });
+});
+
+// Tabs
+document.querySelectorAll('.tab').forEach(tab => {
+  tab.addEventListener('click', function() {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    this.classList.add('active');
+    document.getElementById('page-' + this.dataset.page).classList.add('active');
+  });
+});
+
+// Reset functions
+function resetAll() {
+  if (confirm('Weet je zeker dat je alle vinkjes wilt resetten?')) {
+    checked = {};
+    saveChecked();
+    rerender();
+  }
+}
+
+function resetEverything() {
+  if (confirm('Dit reset ALLES: vinkjes, verborgen items en eigen toevoegingen. Doorgaan?')) {
+    checked = {};
+    hidden = {};
+    custom = { gb: [], kl: [], td: [], zh: [] };
+    merken = {};
+    saveChecked();
+    saveHidden();
+    saveCustom();
+    saveMerken();
+    rerender();
+  }
+}
+
+function rerender() {
+  renderGeboortelijst();
+  renderKledij();
+  renderTodos();
+  renderZiekenhuis();
+  updateProgress();
+}
+
+// Init
+rerender();
+</script>
+</body>
+</html>
